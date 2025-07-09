@@ -1,130 +1,150 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2025-07-09 死淘日报</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 428px;
-      margin: auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-    .title {
-      font-size: 20px;
-      color: #003087;
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .timestamp {
-      font-size: 12px;
-      color: #666;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 12px 6px;
-      text-align: center;
-      font-size: 14px;
-    }
-    th {
-      background-color: #003087;
-      color: white;
-    }
-    td.positive {
-      color: #00A651;
-      font-weight: bold;
-    }
-    td.negative {
-      color: #FF0000;
-      font-weight: bold;
-    }
-    .footer {
-      font-size: 12px;
-      color: #666;
-      text-align: center;
-      margin-top: 12px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>死淘日报 - 2025-07-09</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #003087;
+            text-align: center;
+        }
+        .timestamp {
+            text-align: center;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+        th {
+            background-color: #003087;
+            color: white;
+        }
+        .positive { color: #00A651; }
+        .negative { color: #FF0000; }
+        .total-row td {
+            font-weight: bold;
+            background: #f0f0f0;
+        }
+        .form-input {
+            max-width: 600px;
+            margin: auto;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .form-input input, .form-input select {
+            padding: 6px;
+            margin: 5px;
+            width: 80px;
+        }
+        .form-input button {
+            padding: 8px 12px;
+            background: #003087;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="title">2025-07-09 死淘日报</div>
-    <div class="timestamp">04:54 PM JST, July 09, 2025</div>
-    <table>
-      <thead>
-        <tr>
-          <th>📋 栋舍ID</th>
-          <th>🐔 死淘数</th>
-          <th>🔼 环比变化</th>
-          <th>🪶 栋状态</th>
-          <th>📝 备注</th>
-        </tr>
-      </thead>
-      <tbody>
 
+<h1>2025-07-09 死淘日报</h1>
+<div class="timestamp">数据采集时间：07:39 AM JST, July 09, 2025</div>
+
+<div class="form-input">
+    <label>选择栋舍:</label>
+    <select id="houseId">
+        <option value="1栋">1栋</option>
+        <option value="2栋">2栋</option>
+        <option value="3栋">3栋</option>
+        <option value="4栋">4栋</option>
+    </select>
+    <label>死淘数:</label>
+    <input type="number" id="deadCount" required>
+    <label>环比:</label>
+    <input type="number" id="change" required>
+    <label>备注:</label>
+    <input type="text" id="note">
+    <button onclick="addRow()">添加</button>
+</div>
+
+<table id="reportTable">
+    <thead>
         <tr>
-          <td>1栋</td>
-          <td>75</td>
-          <td class="negative">-22</td>
-          <td>换羽</td>
-          <td>免疫第3天</td>
+            <th>📋 栋舍ID</th>
+            <th>🐔 死淘数</th>
+            <th>🔼 环比变化</th>
+            <th>🪶 栋状态</th>
+            <th>备注</th>
         </tr>
-    
-        <tr>
-          <td>2栋</td>
-          <td>55</td>
-          <td class="positive">+4</td>
-          <td>换羽</td>
-          <td>-</td>
+    </thead>
+    <tbody id="tableBody"></tbody>
+    <tfoot>
+        <tr class="total-row">
+            <td>合计</td>
+            <td id="totalDead">0</td>
+            <td id="totalChange">0</td>
+            <td>-</td>
+            <td>-</td>
         </tr>
-    
-        <tr>
-          <td>3栋</td>
-          <td>44</td>
-          <td class="negative">-2</td>
-          <td>换羽</td>
-          <td>-</td>
-        </tr>
-    
-        <tr>
-          <td>4栋</td>
-          <td>52</td>
-          <td class="positive">+1</td>
-          <td>换羽</td>
-          <td>-</td>
-        </tr>
-    
-        <tr>
-          <td><strong>合计</strong></td>
-          <td><strong>226</strong></td>
-          <td class="negative"><strong>-19</strong></td>
-          <td>-</td>
-          <td>-</td>
-        </tr>
-    
-      </tbody>
-    </table>
-    <div class="footer">
-      📅 数据采集时间：2025-07-09 16:54 JST<br>
-      📌 此报告仅供内部参考
-    </div>
-  </div>
+    </tfoot>
+</table>
+
+<script>
+    const tableBody = document.getElementById('tableBody');
+    const totalDead = document.getElementById('totalDead');
+    const totalChange = document.getElementById('totalChange');
+
+    let totalDeadSum = 0;
+    let totalChangeSum = 0;
+
+    function addRow() {
+        const house = document.getElementById('houseId').value;
+        const dead = parseInt(document.getElementById('deadCount').value);
+        const change = parseInt(document.getElementById('change').value);
+        const note = document.getElementById('note').value || '-';
+        const status = "换羽";
+
+        if (isNaN(dead) || isNaN(change)) return;
+
+        totalDeadSum += dead;
+        totalChangeSum += change;
+
+        const changeClass = change >= 0 ? 'positive' : 'negative';
+        const formattedChange = (change >= 0 ? '+' : '') + change;
+
+        const row = `<tr>
+            <td>${house}</td>
+            <td>${dead}</td>
+            <td class="${changeClass}">${formattedChange}</td>
+            <td>${status}</td>
+            <td>${note}</td>
+        </tr>`;
+
+        tableBody.innerHTML += row;
+        totalDead.innerText = totalDeadSum;
+        totalChange.innerText = (totalChangeSum >= 0 ? '+' : '') + totalChangeSum;
+    }
+</script>
+
 </body>
 </html>
