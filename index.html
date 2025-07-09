@@ -1,155 +1,159 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>死淘日报</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        h1 {
-            font-size: 24px;
-            color: #003087;
-        }
-        .timestamp {
-            margin-bottom: 20px;
-        }
-        .form-section {
-            margin-bottom: 30px;
-        }
-        label {
-            display: block;
-            margin: 8px 0 4px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #003087;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background: #003087;
-            color: white;
-        }
-        .positive { color: green; }
-        .negative { color: red; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>死淘日报</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1em;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      color: #003087;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.2em;
+    }
+    button {
+      margin-top: 1em;
+      background-color: #003087;
+      color: white;
+      padding: 0.6em 1.2em;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2em;
+    }
+    th {
+      background-color: #003087;
+      color: white;
+      padding: 0.5em;
+    }
+    td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+    .positive { color: green; }
+    .negative { color: red; }
+    .logo {
+      max-height: 40px;
+      margin-bottom: 1em;
+    }
+  </style>
 </head>
 <body>
-    <h1 id="date-title">死淘日报</h1>
-    <div class="timestamp" id="timestamp">数据采集时间：</div>
+  <div>
+    <img src="https://via.placeholder.com/150x40?text=Farm+Logo" alt="Logo" class="logo">
+    <h1 id="report-title">死淘日报</h1>
+    <p id="timestamp"></p>
+    <label for="house">栋号:</label>
+    <select id="house">
+      <option value="1栋">1栋</option>
+      <option value="2栋">2栋</option>
+      <option value="3栋">3栋</option>
+      <option value="4栋">4栋</option>
+      <option value="5栋">5栋</option>
+    </select>
+    <label for="count">今日死淘数:</label>
+    <input type="number" id="count" />
+    <label for="status">栋状态:</label>
+    <input type="text" id="status" placeholder="如：换羽、转群等" />
+    <label for="remark">备注:</label>
+    <input type="text" id="remark" placeholder="如：免疫第3天" />
+    <button onclick="submitData()">确认提交</button>
+  </div>
 
-    <div class="form-section">
-        <label for="house">栋号:</label>
-        <select id="house">
-            <option value="1栋">1栋</option><option value="2栋">2栋</option><option value="3栋">3栋</option><option value="4栋">4栋</option><option value="5栋">5栋</option><option value="6栋">6栋</option><option value="7栋">7栋</option><option value="8栋">8栋</option><option value="9栋">9栋</option><option value="10栋">10栋</option><option value="11栋">11栋</option><option value="12栋">12栋</option><option value="13栋">13栋</option><option value="14栋">14栋</option><option value="15栋">15栋</option><option value="16栋">16栋</option>
-        </select>
-
-        <label for="count">今日死淘数:</label>
-        <input type="number" id="count" placeholder="请输入死淘数">
-
-        <label for="status">栋状态:</label>
-        <input type="text" id="status" placeholder="如：换羽、转群等">
-
-        <label for="note">备注:</label>
-        <input type="text" id="note" placeholder="如：免疫第3天">
-
-        <button onclick="submitData()">确认提交</button>
-    </div>
-
-    <h2>已提交数据：</h2>
-    <table id="data-table">
-        <thead>
-            <tr>
-                <th>栋舍ID</th>
-                <th>死淘数</th>
-                <th>环比变化</th>
-                <th>栋状态</th>
-                <th>备注</th>
-                <th>时间</th>
-            </tr>
-        </thead>
-        <tbody id="table-body">
-        </tbody>
+  <div>
+    <h3>已提交数据：</h3>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>栋舍ID</th>
+          <th>死淘数</th>
+          <th>环比变化</th>
+          <th>栋状态</th>
+          <th>备注</th>
+          <th>时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
     </table>
+  </div>
 
-    <script>
-        const date = new Date();
-        document.getElementById("date-title").textContent = 
-            date.toISOString().split('T')[0] + " 死淘日报";
-        document.getElementById("timestamp").textContent = 
-            "数据采集时间： " + date.toLocaleTimeString("ja-JP", {hour: '2-digit', minute:'2-digit', hour12: true}) + " JST";
+  <script>
+    const tableBody = document.querySelector("#resultTable tbody");
+    const storageKey = "deathReportData";
 
-        let history = JSON.parse(localStorage.getItem("deathData") || "[]");
+    function updateTimestamp() {
+      const now = new Date();
+      const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Tokyo' };
+      const timeStr = now.toLocaleTimeString('zh-CN', options);
+      const dateStr = now.toISOString().split('T')[0];
+      document.getElementById("timestamp").textContent = "数据采集时间： " + timeStr + " JST";
+      document.getElementById("report-title").textContent = dateStr + " 死淘日报";
+    }
 
-        function getYesterdayData(house) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yDate = yesterday.toISOString().split('T')[0];
-            const match = history.find(d => d.date === yDate && d.house === house);
-            return match ? parseInt(match.count) : null;
-        }
+    function loadData() {
+      tableBody.innerHTML = "";
+      const data = JSON.parse(localStorage.getItem(storageKey)) || [];
+      data.forEach((d, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${d.house}</td>
+          <td>${d.count}</td>
+          <td class="${d.change > 0 ? 'positive' : d.change < 0 ? 'negative' : ''}">${d.change > 0 ? "+" : ""}${d.change}</td>
+          <td>${d.status}</td>
+          <td>${d.remark}</td>
+          <td>${d.time}</td>
+          <td><button onclick="deleteRow(${index})">删除</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
 
-        function renderTable() {
-            const tbody = document.getElementById("table-body");
-            tbody.innerHTML = "";
-            history.filter(d => d.date === date.toISOString().split('T')[0])
-                .forEach(d => {
-                    let change = parseInt(d.change);
-                    let colorClass = change > 0 ? "positive" : (change < 0 ? "negative" : "");
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${d.house}</td>
-                            <td>${d.count}</td>
-                            <td class="${colorClass}">${change > 0 ? "+" : ""}${change}</td>
-                            <td>${d.status}</td>
-                            <td>${d.note}</td>
-                            <td>${d.time}</td>
-                        </tr>`;
-                });
-        }
+    function submitData() {
+      const house = document.getElementById("house").value;
+      const count = parseInt(document.getElementById("count").value);
+      const status = document.getElementById("status").value;
+      const remark = document.getElementById("remark").value;
+      const now = new Date();
+      const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Tokyo' };
+      const timeStr = now.toLocaleTimeString('zh-CN', options) + " JST";
 
-        function submitData() {
-            const house = document.getElementById("house").value;
-            const count = parseInt(document.getElementById("count").value);
-            const status = document.getElementById("status").value;
-            const note = document.getElementById("note").value;
-            const now = new Date();
-            const time = now.toLocaleTimeString("ja-JP", {hour: '2-digit', minute:'2-digit', hour12: true}) + " JST";
-            const today = now.toISOString().split('T')[0];
-            const yesterdayCount = getYesterdayData(house);
-            const change = (yesterdayCount !== null) ? (count - yesterdayCount) : 0;
+      let data = JSON.parse(localStorage.getItem(storageKey)) || [];
+      let prev = data.filter(d => d.house === house);
+      let lastCount = prev.length ? prev[prev.length - 1].count : 0;
+      let change = count - lastCount;
 
-            history.push({house, count, change, status, note, time, date: today});
-            localStorage.setItem("deathData", JSON.stringify(history));
-            renderTable();
-        }
+      data.push({ house, count, change, status, remark, time: timeStr });
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      loadData();
+    }
 
-        renderTable();
-    </script>
+    function deleteRow(index) {
+      let data = JSON.parse(localStorage.getItem(storageKey)) || [];
+      data.splice(index, 1);
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      loadData();
+    }
+
+    updateTimestamp();
+    loadData();
+  </script>
 </body>
 </html>
