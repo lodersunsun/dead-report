@@ -1,150 +1,119 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <title>2025-07-09 死淘日报</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>死淘日报 - 2025-07-09</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #003087;
-            text-align: center;
-        }
-        .timestamp {
-            text-align: center;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            max-width: 600px;
-            margin: auto;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ccc;
-        }
-        th {
-            background-color: #003087;
-            color: white;
-        }
-        .positive { color: #00A651; }
-        .negative { color: #FF0000; }
-        .total-row td {
-            font-weight: bold;
-            background: #f0f0f0;
-        }
-        .form-input {
-            max-width: 600px;
-            margin: auto;
-            margin-bottom: 30px;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .form-input input, .form-input select {
-            padding: 6px;
-            margin: 5px;
-            width: 80px;
-        }
-        .form-input button {
-            padding: 8px 12px;
-            background: #003087;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
+        body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #003087; font-size: 1.5rem; margin-bottom: 0.5em; }
+        label { display: block; margin-top: 1em; font-weight: bold; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 10px; margin-top: 0.5em; border: 1px solid #ccc; border-radius: 5px; }
+        button { margin-top: 1.5em; width: 100%; padding: 12px; background-color: #003087; color: white; border: none; border-radius: 5px; font-size: 1rem; }
+        .record { margin-top: 2em; background: #f9f9f9; padding: 10px; border-left: 5px solid #003087; }
+        .positive { color: green; }
+        .negative { color: red; }
     </style>
 </head>
 <body>
+<div class="container">
+    <h1 id="title">2025-07-09 死淘日报</h1>
+    <p id="timestamp"></p>
 
-<h1>2025-07-09 死淘日报</h1>
-<div class="timestamp">数据采集时间：07:39 AM JST, July 09, 2025</div>
-
-<div class="form-input">
-    <label>选择栋舍:</label>
-    <select id="houseId">
-        <option value="1栋">1栋</option>
-        <option value="2栋">2栋</option>
-        <option value="3栋">3栋</option>
-        <option value="4栋">4栋</option>
+    <label for="house">选择栋号：</label>
+    <select id="house">
+        <option value="1栋">1栋</option><option value="2栋">2栋</option><option value="3栋">3栋</option><option value="4栋">4栋</option><option value="5栋">5栋</option><option value="6栋">6栋</option><option value="7栋">7栋</option><option value="8栋">8栋</option><option value="9栋">9栋</option><option value="10栋">10栋</option><option value="11栋">11栋</option><option value="12栋">12栋</option><option value="13栋">13栋</option><option value="14栋">14栋</option><option value="15栋">15栋</option><option value="16栋">16栋</option>
     </select>
-    <label>死淘数:</label>
-    <input type="number" id="deadCount" required>
-    <label>环比:</label>
-    <input type="number" id="change" required>
-    <label>备注:</label>
-    <input type="text" id="note">
-    <button onclick="addRow()">添加</button>
+
+    <label for="today">今日死淘数：</label>
+    <input type="number" id="today" placeholder="请输入死淘数">
+
+    <label>环比变化：</label>
+    <p id="changeDisplay">-</p>
+
+    <label for="status">栋状态：</label>
+    <input type="text" id="status" placeholder="如：换羽、转群">
+
+    <label for="note">备注：</label>
+    <input type="text" id="note" placeholder="如：免疫第3天">
+
+    <button onclick="submitData()">确认提交</button>
+
+    <div class="record">
+        <h3>已提交数据：</h3>
+        <div id="recordList"></div>
+    </div>
 </div>
 
-<table id="reportTable">
-    <thead>
-        <tr>
-            <th>📋 栋舍ID</th>
-            <th>🐔 死淘数</th>
-            <th>🔼 环比变化</th>
-            <th>🪶 栋状态</th>
-            <th>备注</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-    <tfoot>
-        <tr class="total-row">
-            <td>合计</td>
-            <td id="totalDead">0</td>
-            <td id="totalChange">0</td>
-            <td>-</td>
-            <td>-</td>
-        </tr>
-    </tfoot>
-</table>
-
 <script>
-    const tableBody = document.getElementById('tableBody');
-    const totalDead = document.getElementById('totalDead');
-    const totalChange = document.getElementById('totalChange');
+    const yesterdayData = {
+        "1栋": 97, "2栋": 51, "3栋": 46, "4栋": 51
+    };
 
-    let totalDeadSum = 0;
-    let totalChangeSum = 0;
+    const timestampEl = document.getElementById("timestamp");
+    const houseEl = document.getElementById("house");
+    const todayEl = document.getElementById("today");
+    const changeDisplay = document.getElementById("changeDisplay");
+    const statusEl = document.getElementById("status");
+    const noteEl = document.getElementById("note");
+    const recordList = document.getElementById("recordList");
 
-    function addRow() {
-        const house = document.getElementById('houseId').value;
-        const dead = parseInt(document.getElementById('deadCount').value);
-        const change = parseInt(document.getElementById('change').value);
-        const note = document.getElementById('note').value || '-';
-        const status = "换羽";
-
-        if (isNaN(dead) || isNaN(change)) return;
-
-        totalDeadSum += dead;
-        totalChangeSum += change;
-
-        const changeClass = change >= 0 ? 'positive' : 'negative';
-        const formattedChange = (change >= 0 ? '+' : '') + change;
-
-        const row = `<tr>
-            <td>${house}</td>
-            <td>${dead}</td>
-            <td class="${changeClass}">${formattedChange}</td>
-            <td>${status}</td>
-            <td>${note}</td>
-        </tr>`;
-
-        tableBody.innerHTML += row;
-        totalDead.innerText = totalDeadSum;
-        totalChange.innerText = (totalChangeSum >= 0 ? '+' : '') + totalChangeSum;
+    function updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + " JST, " + now.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+        timestampEl.textContent = "数据录入时间：" + timeStr;
     }
-</script>
 
+    function calculateChange() {
+        const house = houseEl.value;
+        const todayVal = parseInt(todayEl.value) || 0;
+        const yesterday = yesterdayData[house] || 0;
+        const diff = todayVal - yesterday;
+        changeDisplay.textContent = (diff >= 0 ? "+" : "") + diff;
+        changeDisplay.className = diff > 0 ? 'positive' : (diff < 0 ? 'negative' : '');
+        return diff;
+    }
+
+    function submitData() {
+        const house = houseEl.value;
+        const todayVal = parseInt(todayEl.value);
+        if (isNaN(todayVal)) {
+            alert("请输入今日死淘数");
+            return;
+        }
+        const change = calculateChange();
+        const status = statusEl.value;
+        const note = noteEl.value;
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + " JST";
+
+        const data = {
+            house, today: todayVal, change, status, note, time: timeStr
+        };
+
+        const key = "2025-07-09_data";
+        let all = JSON.parse(localStorage.getItem(key)) || [];
+        all.push(data);
+        localStorage.setItem(key, JSON.stringify(all));
+        showRecords();
+        todayEl.value = '';
+        statusEl.value = '';
+        noteEl.value = '';
+    }
+
+    function showRecords() {
+        const key = "2025-07-09_data";
+        const all = JSON.parse(localStorage.getItem(key)) || [];
+        recordList.innerHTML = all.map(d => `
+            <p><strong>${d.house}</strong> 死淘：${d.today}，环比：<span class="${d.change > 0 ? 'positive' : (d.change < 0 ? 'negative' : '')}">${d.change >= 0 ? '+' : ''}{d.change}</span>，状态：${d.status}，备注：${d.note}，时间：${d.time}</p>
+        `).join('');
+    }
+
+    updateTime();
+    showRecords();
+    todayEl.addEventListener("input", calculateChange);
+    houseEl.addEventListener("change", calculateChange);
+</script>
 </body>
 </html>
