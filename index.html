@@ -1,97 +1,155 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <title>死淘日报</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025-07-09 死淘日报</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
             padding: 20px;
-            background-color: #f9f9f9;
             color: #333;
         }
-        h1, h3 {
+        h1 {
+            font-size: 24px;
             color: #003087;
         }
-        .report-box {
-            border: 1px solid #003087;
-            border-left: 5px solid #003087;
-            border-radius: 6px;
-            padding: 15px;
-            background-color: #fff;
-            max-width: 100%;
-            overflow-x: auto;
+        .timestamp {
+            margin-bottom: 20px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin: 8px 0 4px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #003087;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
         }
         th, td {
+            border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
-            border-bottom: 1px solid #ccc;
         }
         th {
-            background-color: #003087;
+            background: #003087;
             color: white;
         }
-        .green { color: green; }
-        .red { color: red; }
-        .gray { color: gray; }
+        .positive { color: green; }
+        .negative { color: red; }
     </style>
 </head>
 <body>
-    <h1>2025-07-09 死淘日报</h1>
-    <p>数据采集时间：09:05 PM JST</p>
-    <h3>已提交数据：</h3>
-    <div class="report-box">
-        <table>
-            <thead>
-                <tr>
-                    <th>栋舍ID</th>
-                    <th>死淘数</th>
-                    <th>环比变化</th>
-                    <th>栋状态</th>
-                    <th>备注</th>
-                    <th>时间</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1栋</td>
-                    <td>75</td>
-                    <td class="red">-22</td>
-                    <td>换羽</td>
-                    <td>免疫第3天</td>
-                    <td>08:00 PM JST</td>
-                </tr>
-                <tr>
-                    <td>2栋</td>
-                    <td>55</td>
-                    <td class="green">+1</td>
-                    <td></td>
-                    <td></td>
-                    <td>08:00 PM JST</td>
-                </tr>
-                <tr>
-                    <td>3栋</td>
-                    <td>44</td>
-                    <td class="gray">0</td>
-                    <td></td>
-                    <td></td>
-                    <td>08:01 PM JST</td>
-                </tr>
-                <tr>
-                    <td>4栋</td>
-                    <td>52</td>
-                    <td class="green">+1</td>
-                    <td></td>
-                    <td></td>
-                    <td>08:01 PM JST</td>
-                </tr>
-            </tbody>
-        </table>
+    <h1 id="date-title">死淘日报</h1>
+    <div class="timestamp" id="timestamp">数据采集时间：</div>
+
+    <div class="form-section">
+        <label for="house">栋号:</label>
+        <select id="house">
+            <option value="1栋">1栋</option><option value="2栋">2栋</option><option value="3栋">3栋</option><option value="4栋">4栋</option><option value="5栋">5栋</option><option value="6栋">6栋</option><option value="7栋">7栋</option><option value="8栋">8栋</option><option value="9栋">9栋</option><option value="10栋">10栋</option><option value="11栋">11栋</option><option value="12栋">12栋</option><option value="13栋">13栋</option><option value="14栋">14栋</option><option value="15栋">15栋</option><option value="16栋">16栋</option>
+        </select>
+
+        <label for="count">今日死淘数:</label>
+        <input type="number" id="count" placeholder="请输入死淘数">
+
+        <label for="status">栋状态:</label>
+        <input type="text" id="status" placeholder="如：换羽、转群等">
+
+        <label for="note">备注:</label>
+        <input type="text" id="note" placeholder="如：免疫第3天">
+
+        <button onclick="submitData()">确认提交</button>
     </div>
+
+    <h2>已提交数据：</h2>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>栋舍ID</th>
+                <th>死淘数</th>
+                <th>环比变化</th>
+                <th>栋状态</th>
+                <th>备注</th>
+                <th>时间</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+
+    <script>
+        const date = new Date();
+        document.getElementById("date-title").textContent = 
+            date.toISOString().split('T')[0] + " 死淘日报";
+        document.getElementById("timestamp").textContent = 
+            "数据采集时间： " + date.toLocaleTimeString("ja-JP", {hour: '2-digit', minute:'2-digit', hour12: true}) + " JST";
+
+        let history = JSON.parse(localStorage.getItem("deathData") || "[]");
+
+        function getYesterdayData(house) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yDate = yesterday.toISOString().split('T')[0];
+            const match = history.find(d => d.date === yDate && d.house === house);
+            return match ? parseInt(match.count) : null;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+            history.filter(d => d.date === date.toISOString().split('T')[0])
+                .forEach(d => {
+                    let change = parseInt(d.change);
+                    let colorClass = change > 0 ? "positive" : (change < 0 ? "negative" : "");
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${d.house}</td>
+                            <td>${d.count}</td>
+                            <td class="${colorClass}">${change > 0 ? "+" : ""}${change}</td>
+                            <td>${d.status}</td>
+                            <td>${d.note}</td>
+                            <td>${d.time}</td>
+                        </tr>`;
+                });
+        }
+
+        function submitData() {
+            const house = document.getElementById("house").value;
+            const count = parseInt(document.getElementById("count").value);
+            const status = document.getElementById("status").value;
+            const note = document.getElementById("note").value;
+            const now = new Date();
+            const time = now.toLocaleTimeString("ja-JP", {hour: '2-digit', minute:'2-digit', hour12: true}) + " JST";
+            const today = now.toISOString().split('T')[0];
+            const yesterdayCount = getYesterdayData(house);
+            const change = (yesterdayCount !== null) ? (count - yesterdayCount) : 0;
+
+            history.push({house, count, change, status, note, time, date: today});
+            localStorage.setItem("deathData", JSON.stringify(history));
+            renderTable();
+        }
+
+        renderTable();
+    </script>
 </body>
 </html>
